@@ -1,4 +1,30 @@
-﻿using System;
+//
+// pdfconcat  concatinate 2 pdf files in 1 (appen) or all pdfs in 1 pdf file with page appending order
+// codeed by google gemini
+// for all person who hate such a damn work by hand also I am one of those.  NA-KA-MA!!
+// 06/03/2026 Ver. 0.1
+//
+// directory tree and pdf file store
+//
+// <page1 directory>     <page2 directory>
+// |-00000001.pdf        |-00000001.pdf
+// |-00000002.pdf        |-00000002.pdf
+// |-00000003.pdf        |-00000003.pdf
+// |                     |
+//
+// append mode: append
+// page1/00000001.pdf + page2/00000001.pdf -> output/00000001.pdf
+// page1/00000002.pdf + page2/00000002.pdf -> output/00000002.pdf
+// page1/00000003.pdf + page2/00000003.pdf -> output/00000003.pdf
+//
+// append mode : all
+// page1/00000001.pdf + page2/00000001.pdf + page1/00000002.pdf + page2/00000002.pdf + page1/00000003.pdf + page2/00000003.pdf -> output/xxxxxxxx.pdf
+//
+// cli
+// $ pdfconcat <page1-dir> <page2-dir> append|all  or dotnet run
+//
+
+using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using PdfSharpCore.Pdf;
