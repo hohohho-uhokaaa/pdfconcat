@@ -23,18 +23,21 @@
 // cli
 // $ pdfconcat <page1-dir> <page2-dir> append|all  or dotnet run
 //
-// on .csjpro
+// on .csjpro for free no charge for you
 // <ItemGroup>
 //   <PackageReference Include="PdfSharpCore" Version="1.3.67" />
+//   <PackageReference Include="SixLabors.ImageSharp" Version="2.1.11" />
 // </ItemGroup>
 //
 // or
 //
 // add package first
-// bash
+// on bash
 // dotnet add package PdfSharpCore --version 1.3.67
-// PowerShell
+// dotnet add package SixLabors.ImageSharp --version 2.1.11
+// on PowerShell
 // Install-Package PdfSharpCore -Version 1.3.67
+// Install-Package SixLabors.ImageSharp --version 2.1.11
 //
 
 using System;
