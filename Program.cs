@@ -59,6 +59,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using PdfSharpCore.Pdf;
 using PdfSharpCore.Pdf.IO;
+using pdfconcat.Properties;
 
 namespace pdfconcat;
 
@@ -66,7 +67,11 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine($"【デバッグ】受け取った引数の数: {args.Length} 個, 中身: {string.Join(", ", args)}");
+        Console.WriteLine(string.Format(
+            Messages.DebugArgCount,
+            args.Length,
+            string.Join(", ", args)
+        ));
 
         if (args.Length < 3)
         {
@@ -80,13 +85,13 @@ class Program
 
         if (mode != "append" && mode != "all")
         {
-            Console.WriteLine("エラー: 3つ目の引数（モード）には 'append' または 'all' を指定してください。");
+            Console.WriteLine(Messages.ErrorMode);
             return;
         }
 
         if (!Directory.Exists(dir1) || !Directory.Exists(dir2))
         {
-            Console.WriteLine("指定された入力ディレクトリが存在しません。パスを確認してください。");
+            Console.WriteLine(Messages.DirectoryNotFound);
             return;
         }
 
@@ -104,7 +109,10 @@ class Program
             // =================================================================
             // ステップ 1: 個別ペアの結合（ここで要件通りのしおりを各PDFに埋め込む）
             // =================================================================
-            Console.WriteLine($"\n--- [Step 1] 個別ペアの結合処理を開始します (モード: {mode}) ---");
+            Console.WriteLine(string.Format(
+                Messages.Step1Start,
+                mode
+            ));
 
             string[] filesInDir1 = Directory.GetFiles(dir1, "*.pdf")
                 .Where(f => Regex.IsMatch(Path.GetFileName(f), @"^\d{8}\.pdf$", RegexOptions.IgnoreCase))
@@ -119,12 +127,18 @@ class Program
 
                 if (!File.Exists(file2Path))
                 {
-                    Console.WriteLine($"スキップ: {fileName} に対応するファイルが dir2 に見つかりません。");
+                    Console.WriteLine(string.Format(
+                        Messages.FileNotFound,
+                        fileName
+                    ));
                     continue;
                 }
 
                 string singleOutputPath = Path.Combine(outputDir, fileName);
-                Console.WriteLine($"個別ファイル生成中: {fileName}...");
+                Console.WriteLine(string.Format(
+                    Messages.ProcessingFile,
+                    fileName
+                ));
                 string bookmarkTitle = Path.GetFileNameWithoutExtension(fileName);
 
                 if (mode == "append")
@@ -141,14 +155,14 @@ class Program
 
             if (processedCount == 0)
             {
-                Console.WriteLine("結合対象となるペアが1つも見つからなかったため、処理を終了します。");
+                Console.WriteLine(Messages.NoPairsFound);
                 return;
             }
 
             // =================================================================
             // ステップ 2: 個別PDFを統合（個別ファイルが持つしおり構造を維持してマージ）
             // =================================================================
-            Console.WriteLine($"\n--- [Step 2] output ディレクトリ内のPDFを allin1.pdf に統合します ---");
+            Console.WriteLine($"\n{Messages.Step2Start}");
 
             string[] generatedOutputs = Directory.GetFiles(outputDir, "*.pdf")
                 .Where(f => Regex.IsMatch(Path.GetFileName(f), @"^\d{8}\.pdf$", RegexOptions.IgnoreCase))
@@ -159,7 +173,10 @@ class Program
             {
                 foreach (string outputPath in generatedOutputs)
                 {
-                    Console.WriteLine($"allin1 に追加中: {Path.GetFileName(outputPath)}");
+                    Console.WriteLine(string.Format(
+                        Messages.Step2Adding,
+                        Path.GetFileName(outputPath)
+                    ));
 
                     // 💡 しおりの階層構造を壊さずにコピーするため、各ページの参照元ドキュメントを開き、
                     // ページ追加と同時に、そのファイルが持つ Outlines を finalDocument に移植します
@@ -190,21 +207,31 @@ class Program
                 finalDocument.Save(finalAllInOnePath);
             }
 
-            Console.WriteLine($"\n🎉 すべての処理が完了しました！");
-            Console.WriteLine($"➔ 個別ファイル出力先: {outputDir} ({processedCount} 個のPDF)");
-            Console.WriteLine($"➔ 最終統合ファイル: {finalAllInOnePath}");
+            Console.WriteLine($"\n{Messages.CompleteSuccess}");
+            Console.WriteLine(string.Format(
+                Messages.OutputDirectory,
+                outputDir,
+                processedCount
+            ));
+            Console.WriteLine(string.Format(
+                Messages.FinalFile,
+                finalAllInOnePath
+            ));
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"エラーが発生しました: {ex.Message}");
+            Console.WriteLine(string.Format(
+                Messages.ErrorOccurred,
+                ex.Message
+            ));
         }
     }
 
     static void ShowUsage()
     {
-        Console.WriteLine("【使い方】");
-        Console.WriteLine("dotnet run <dir1のパス> <dir2のパス> <mode(append|all)>");
-        Console.WriteLine("例: dotnet run /path/to/page1 /path/to/page2 all");
+        Console.WriteLine(Messages.UsageHeader);
+        Console.WriteLine(Messages.UsageFormat);
+        Console.WriteLine(Messages.UsageExample);
     }
 
     /// <summary>
